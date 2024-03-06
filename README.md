@@ -9,4 +9,3 @@ This is a simple JavaFX application for learning vocabulary through flashcards. 
 - Keep track of your score and progress.
 - Congratulatory screen upon completing the flashcard quiz.
 
-## Getting Started
