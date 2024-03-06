@@ -139,25 +139,30 @@ public class WordCardApplication extends Application {
         if (knownWords.size() == words.size()) {
             congratulationsScreen();
         } else {
-            // Select the next word randomly
             Random random = new Random();
             List<Integer> remainingIndexes = new ArrayList<>();
+    
             for (int i = 0; i < words.size(); i++) {
                 if (!knownWords.contains(i)) {
                     remainingIndexes.add(i);
                 }
             }
-            currentIndex = remainingIndexes.get(random.nextInt(remainingIndexes.size()));
-            label.setText(words.get(currentIndex).getEnglish());
     
-            label.getStyleClass().remove("turkishLabel");
+            if (!remainingIndexes.isEmpty()) {
+                currentIndex = remainingIndexes.get(random.nextInt(remainingIndexes.size()));
+                label.setText(words.get(currentIndex).getEnglish());
     
-            label.getStyleClass().add("englishLabel");
-            understoodButton.setVisible(false);
-            knewButton.setVisible(true);
-            didNotKnowButton.setVisible(true);
+                label.getStyleClass().remove("turkishLabel");
+                label.getStyleClass().add("englishLabel");
+                understoodButton.setVisible(false);
+                knewButton.setVisible(true);
+                didNotKnowButton.setVisible(true);
+            } else {
+                congratulationsScreen();
+            }
         }
     }
+    
     
 
     private void congratulationsScreen() {
