@@ -46,7 +46,7 @@ public class WordCardApplication extends Application {
         stage.setHeight(600);
 
         words = readWords("words.txt");
-        Collections.shuffle(words); // Shuffle the words
+        Collections.shuffle(words); 
         knownWords = new HashSet<>();
         totalCount = words.size();
         currentIndex = 0;
@@ -63,8 +63,8 @@ public class WordCardApplication extends Application {
 
         label = new Label(words.get(currentIndex).getEnglish());
         label.getStyleClass().add("englishLabel");
-        label.setWrapText(true); // Enable text wrapping
-        label.setMaxWidth(400); // Set the maximum width for wrapping
+        label.setWrapText(true); 
+        label.setMaxWidth(400); 
         cardFrame.getChildren().add(label);
 
         HBox bottomFrame = new HBox(20);
@@ -136,7 +136,6 @@ public class WordCardApplication extends Application {
     private void nextCard() {
         clicked = false;
     
-        // If all words are done, show congratulations screen
         if (knownWords.size() == words.size()) {
             congratulationsScreen();
         } else {
@@ -151,7 +150,6 @@ public class WordCardApplication extends Application {
             currentIndex = remainingIndexes.get(random.nextInt(remainingIndexes.size()));
             label.setText(words.get(currentIndex).getEnglish());
     
-            // Remove the "turkishLabel" style class
             label.getStyleClass().remove("turkishLabel");
     
             label.getStyleClass().add("englishLabel");
@@ -175,13 +173,11 @@ public class WordCardApplication extends Application {
         Stage congratulationsStage = new Stage();
         Scene congratulationsScene = new Scene(congratulationsLayout);
     
-        // Apply CSS to the scene
         congratulationsScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
     
         congratulationsStage.setScene(congratulationsScene);
         congratulationsStage.show();
     
-        // Close the main window
         Stage mainStage = (Stage) label.getScene().getWindow();
         mainStage.close();
     }
