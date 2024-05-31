@@ -11,7 +11,7 @@
             "type": "java",
             "name": "WordCardApplication",
             "request": "launch",
-            "vmArgs": "--module-path C:/Users/emrem/Desktop/javafx-sdk-21.0.2/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics",
+            "vmArgs": "--module-path C:/Users/emrem/Desktop/library/javafx-sdk-21.0.2/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics",
             "mainClass": "WordCardApplication",
             "projectName": "Language-Word-Flashcards_5c884e06"
         }

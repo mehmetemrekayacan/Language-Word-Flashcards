@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-
 public class WordCardApplication extends Application {
 
     private List<Word> words;
@@ -28,12 +28,14 @@ public class WordCardApplication extends Application {
     private int correctCount;
     private int totalCount;
     private boolean clicked;
+    private boolean isEnglishToTurkish;
 
     private Label label;
     private Label scoreLabel;
+    private TextField answerField;
+    private Button submitButton;
     private Button understoodButton;
-    private Button knewButton;
-    private Button didNotKnowButton;
+    private Button swapButton;
 
     public static void main(String[] args) {
         launch(args);
@@ -46,12 +48,13 @@ public class WordCardApplication extends Application {
         stage.setHeight(600);
 
         words = readWords("words.txt");
-        Collections.shuffle(words); 
+        Collections.shuffle(words);
         knownWords = new HashSet<>();
         totalCount = words.size();
         currentIndex = 0;
         correctCount = 0;
         clicked = false;
+        isEnglishToTurkish = true;
 
         VBox root = new VBox(20);
         root.setPadding(new Insets(50));
@@ -63,33 +66,36 @@ public class WordCardApplication extends Application {
 
         label = new Label(words.get(currentIndex).getEnglish());
         label.getStyleClass().add("englishLabel");
-        label.setWrapText(true); 
-        label.setMaxWidth(400); 
+        label.setWrapText(true);
+        label.setMaxWidth(400);
         cardFrame.getChildren().add(label);
+
+        answerField = new TextField();
+        answerField.setPromptText("Enter the Turkish translation");
+
+        submitButton = new Button("Submit");
+        submitButton.getStyleClass().add("button");
+        submitButton.setOnAction(event -> checkAnswer());
 
         HBox bottomFrame = new HBox(20);
         bottomFrame.getStyleClass().add("bottomFrame");
         bottomFrame.setAlignment(Pos.CENTER);
-        
-        knewButton = new Button("Knew");
-        knewButton.getStyleClass().addAll("button", "knewButton");
-        knewButton.setOnAction(event -> knew());
-
-        didNotKnowButton = new Button("Did Not Know");
-        didNotKnowButton.getStyleClass().addAll("button", "didNotKnowButton");
-        didNotKnowButton.setOnAction(event -> didNotKnow());
 
         understoodButton = new Button("Understood");
         understoodButton.getStyleClass().addAll("button", "understoodButton");
         understoodButton.setVisible(false);
         understoodButton.setOnAction(event -> nextCard());
 
-        bottomFrame.getChildren().addAll(knewButton, understoodButton, didNotKnowButton);
+        swapButton = new Button("Swap");
+        swapButton.getStyleClass().addAll("button", "swapButton");
+        swapButton.setOnAction(event -> swapLanguage());
+
+        bottomFrame.getChildren().addAll(swapButton, understoodButton);
 
         scoreLabel = new Label("Score: " + correctCount + "/" + totalCount);
         scoreLabel.getStyleClass().add("scoreLabel");
 
-        root.getChildren().addAll(cardFrame, bottomFrame, scoreLabel);
+        root.getChildren().addAll(cardFrame, answerField, submitButton, bottomFrame, scoreLabel);
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
@@ -103,7 +109,11 @@ public class WordCardApplication extends Application {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("=");
-                words.add(new Word(parts[0].trim().toUpperCase(), parts[1].trim().toUpperCase()));
+                if (parts.length == 2) {
+                    words.add(new Word(parts[0].trim().toUpperCase(), parts[1].trim().toUpperCase()));
+                } else {
+                    System.err.println("Skipping malformed line: " + line);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,82 +121,100 @@ public class WordCardApplication extends Application {
         return words;
     }
 
-    private void knew() {
+    private void checkAnswer() {
         if (!clicked) {
-            clicked = true;
-            knownWords.add(currentIndex);
-            correctCount++;
-            scoreLabel.setText("Score: " + correctCount + "/" + totalCount);
-            nextCard();
+            String userAnswer = answerField.getText().trim().toUpperCase();
+            boolean isCorrect;
+            if (isEnglishToTurkish) {
+                isCorrect = userAnswer.equals(words.get(currentIndex).getTurkish());
+            } else {
+                isCorrect = userAnswer.equals(words.get(currentIndex).getEnglish());
+            }
+
+            if (isCorrect) {
+                clicked = true;
+                knownWords.add(currentIndex);
+                correctCount++;
+                scoreLabel.setText("Score: " + correctCount + "/" + totalCount);
+                nextCard();
+            } else {
+                String correctAnswer = isEnglishToTurkish ? words.get(currentIndex).getTurkish() : words.get(currentIndex).getEnglish();
+                label.setText("Incorrect! Correct answer: " + correctAnswer);
+                label.getStyleClass().add("turkishLabel");
+                understoodButton.setVisible(true);
+                swapButton.setVisible(false);
+                submitButton.setVisible(false);
+            }
         }
     }
 
-    private void didNotKnow() {
-        if (!clicked) {
-            clicked = true;
-            scoreLabel.setText("Score: " + correctCount + "/" + totalCount);
-            label.setText(words.get(currentIndex).getTurkish());
-            label.getStyleClass().add("turkishLabel");
-            understoodButton.setVisible(true);
-            knewButton.setVisible(false);
-            didNotKnowButton.setVisible(false);
-        }
+    private void swapLanguage() {
+        isEnglishToTurkish = !isEnglishToTurkish;
+        updateCard();
     }
 
     private void nextCard() {
         clicked = false;
-    
+
         if (knownWords.size() == words.size()) {
             congratulationsScreen();
         } else {
             Random random = new Random();
             List<Integer> remainingIndexes = new ArrayList<>();
-    
+
             for (int i = 0; i < words.size(); i++) {
                 if (!knownWords.contains(i)) {
                     remainingIndexes.add(i);
                 }
             }
-    
+
             if (!remainingIndexes.isEmpty()) {
                 currentIndex = remainingIndexes.get(random.nextInt(remainingIndexes.size()));
-                label.setText(words.get(currentIndex).getEnglish());
-    
-                label.getStyleClass().remove("turkishLabel");
-                label.getStyleClass().add("englishLabel");
-                understoodButton.setVisible(false);
-                knewButton.setVisible(true);
-                didNotKnowButton.setVisible(true);
+                updateCard();
             } else {
                 congratulationsScreen();
             }
         }
     }
-    
-    
+
+    private void updateCard() {
+        if (isEnglishToTurkish) {
+            label.setText(words.get(currentIndex).getEnglish());
+            answerField.setPromptText("Enter the Turkish translation");
+        } else {
+            label.setText(words.get(currentIndex).getTurkish());
+            answerField.setPromptText("Enter the English translation");
+        }
+
+        answerField.clear();
+        label.getStyleClass().remove("turkishLabel");
+        label.getStyleClass().add("englishLabel");
+        understoodButton.setVisible(false);
+        swapButton.setVisible(true);
+        submitButton.setVisible(true);
+    }
 
     private void congratulationsScreen() {
         VBox congratulationsLayout = new VBox(20);
         congratulationsLayout.setPadding(new Insets(50));
         congratulationsLayout.getStyleClass().add("congratulationsLayout");
-    
+
         Label congratulationsLabel = new Label("Congratulations! You completed the game.");
         congratulationsLabel.getStyleClass().add("congratulationsLabel");
-    
+
         congratulationsLayout.getChildren().addAll(congratulationsLabel);
-    
+
         Stage congratulationsStage = new Stage();
         Scene congratulationsScene = new Scene(congratulationsLayout);
-    
+
         congratulationsScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-    
+
         congratulationsStage.setScene(congratulationsScene);
         congratulationsStage.show();
-    
+
         Stage mainStage = (Stage) label.getScene().getWindow();
         mainStage.close();
     }
-    
 
     private static class Word {
         private String english;
@@ -206,5 +234,3 @@ public class WordCardApplication extends Application {
         }
     }
 }
-
-
