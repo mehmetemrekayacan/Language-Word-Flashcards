@@ -3,7 +3,7 @@
 }
 
 .cardFrame {
-    -fx-background-color: #ffc7c7;
+    -fx-background-color: #63fe55;
     -fx-padding: 20;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 1);
     -fx-transition: all 0.3s;
@@ -13,7 +13,7 @@
 
 .englishLabel {
     -fx-font-size: 24;
-    -fx-text-fill: #0059ff;
+    -fx-text-fill: #003eb3;
     -fx-font-weight: bold;
     -fx-wrap-text: true;
     -fx-max-width: 400;

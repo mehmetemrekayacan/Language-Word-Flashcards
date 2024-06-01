@@ -76,7 +76,6 @@ public class WordCardController {
         clicked = false;
 
         if (knownWords.size() == words.size()) {
-            // Add your congratulations logic here
         } else {
             Random random = new Random();
             List<Integer> remainingIndexes = new ArrayList<>();
@@ -91,7 +90,6 @@ public class WordCardController {
                 currentIndex = remainingIndexes.get(random.nextInt(remainingIndexes.size()));
                 updateCard();
             } else {
-                // Add your congratulations logic here
             }
         }
     }
