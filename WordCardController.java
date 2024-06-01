@@ -1,5 +1,6 @@
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,8 +20,11 @@ public class WordCardController {
     private Label label;
     private Label scoreLabel;
     private TextField answerField;
+    private Button understoodButton;
+    private Button swapButton;
+    private Button submitButton;
 
-    public WordCardController(List<Word> words, Label label, Label scoreLabel, TextField answerField) {
+    public WordCardController(List<Word> words, Label label, Label scoreLabel, TextField answerField, Button understoodButton, Button swapButton, Button submitButton) {
         this.words = words;
         this.knownWords = new HashSet<>();
         this.totalCount = words.size();
@@ -32,6 +36,9 @@ public class WordCardController {
         this.label = label;
         this.scoreLabel = scoreLabel;
         this.answerField = answerField;
+        this.understoodButton = understoodButton;
+        this.swapButton = swapButton;
+        this.submitButton = submitButton;
 
         updateCard();
     }
@@ -53,6 +60,9 @@ public class WordCardController {
                 String correctAnswer = isEnglishToTurkish ? words.get(currentIndex).getTurkish() : words.get(currentIndex).getEnglish();
                 label.setText("Incorrect! Correct answer: " + correctAnswer);
                 label.getStyleClass().add("turkishLabel");
+                understoodButton.setVisible(true);
+                swapButton.setVisible(false);
+                submitButton.setVisible(false);
             }
         }
     }
@@ -98,5 +108,8 @@ public class WordCardController {
         answerField.clear();
         label.getStyleClass().remove("turkishLabel");
         label.getStyleClass().add("englishLabel");
+        understoodButton.setVisible(false);
+        swapButton.setVisible(true);
+        submitButton.setVisible(true);
     }
 }

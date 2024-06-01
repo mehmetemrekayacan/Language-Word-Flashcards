@@ -62,7 +62,7 @@ public class WordCardApplication extends Application {
 
         root.getChildren().addAll(cardFrame, answerField, submitButton, bottomFrame, scoreLabel);
 
-        controller = new WordCardController(wordManager.getWords(), label, scoreLabel, answerField);
+        controller = new WordCardController(wordManager.getWords(), label, scoreLabel, answerField, understoodButton, swapButton, submitButton);
 
         submitButton.setOnAction(event -> controller.checkAnswer());
         understoodButton.setOnAction(event -> controller.nextCard());
